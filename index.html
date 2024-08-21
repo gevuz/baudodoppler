@@ -4,9 +4,85 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meu Site</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #333;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+    }
+    nav {
+      background-color: #444;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+    }
+    .container {
+      display: flex;
+      margin: 20px;
+    }
+    .main-content {
+      flex: 3;
+      padding: 20px;
+    }
+    .sidebar {
+      flex: 1;
+      padding: 20px;
+      background-color: #f4f4f4;
+      margin-left: 20px;
+    }
+    footer {
+      background-color: #333;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h1>Bem-vindo ao meu site!</h1>
-  <p>Este é um site simples hospedado no GitHub Pages.</p>
+
+  <!-- Cabeçalho -->
+  <header>
+    <h1>Bem-vindo ao Meu Site</h1>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+    <a href="#home">Início</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#contato">Contato</a>
+  </nav>
+
+  <!-- Conteúdo Principal e Barra Lateral -->
+  <div class="container">
+    <div class="main-content">
+      <h2>Conteúdo Principal</h2>
+      <p>Este é o espaço onde o conteúdo principal do site será exibido. Aqui você pode adicionar textos, imagens, vídeos ou qualquer outro tipo de conteúdo que desejar.</p>
+      <p>Você pode dividir o conteúdo em seções e adicionar títulos, listas, links, e mais.</p>
+    </div>
+
+    <aside class="sidebar">
+      <h2>Barra Lateral</h2>
+      <p>Aqui você pode colocar links úteis, uma lista de artigos recentes, ou qualquer outro conteúdo que complemente o principal.</p>
+    </aside>
+  </div>
+
+  <!-- Rodapé -->
+  <footer>
+    <p>&copy; 2024 Meu Site. Todos os direitos reservados.</p>
+  </footer>
+
 </body>
 </html>
