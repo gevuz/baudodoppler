@@ -3,40 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="main/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="icon" href="img/favicon.png" type="image/x-icon">
   <title>Baú do Doppler</title>
 </head>
 <body>
   <!-- Cabeçalho -->
   <header>
-    <h1>BAÚ DO DOPPLER</h1>
+    <img src="img/logo_footer.png" alt="header_logo">
   </header>
 
   <!-- Navegação -->
   <nav>
-    <a href="#home">Início</a>
-    <a href="sobre.html">Sobre</a>
-    <a href="#contato">Contato</a>
+    <a href="index.html">Início</a>
+    <a href="classes.html">Classes</a>
+    <a href="subclasses.html">Subclasses</a>
+    <a href="racas.html">Raças</a>
+    <a href="bestiario.html">Bestiário</a>
+    <a href="magias.html">Magias</a>
+    <a href="itens.html">Itens</a>
+    <a href="outros.html">Outros</a>
+    <a href="contato.html">Contato</a>
   </nav>
 
-  <!-- Conteúdo Principal e Barra Lateral -->
-  <div class="container">
-    <div class="main-content">
-      <h2>Conteúdo Principal</h2>
-      <p>Este é o espaço onde o conteúdo principal do site será exibido. Aqui você pode adicionar textos, imagens, vídeos ou qualquer outro tipo de conteúdo que desejar.</p>
-      <p>Você pode dividir o conteúdo em seções e adicionar títulos, listas, links, e mais.</p>
-    </div>
+  <!-- Conteúdo Principal -->
+    <div id="home_content">
+      <div id="home_main">
+        <h1>Qual a pedida pra hoje?</h1>
+        <p>Dê uma olhada no que preparei pra você, tenho certeza que alguma dessas vai te agradar. Em caso de Mestres, algumas das coisas que possa escolher me farão dizer "tenho dó de seus jogadores...".
+          Alguns conteúdos não estão 100% balanceados, então avalie antes de usá-los em sua aventura, a maior parte de conteúdo será para <em>Dungeons & Dragons 5ª Edição</em>, mas tenho planos de me aventurar noutros sistemas,
+            só preciso saber o suficiente e gostar o bastante.
+        </p>
+        <p>Acima de tudo. <strong>DIVIRTA-SE!</strong></p>
 
-    <aside class="sidebar">
-      <h2>Barra Lateral</h2>
-      <p>Aqui você pode colocar links úteis, uma lista de artigos recentes, ou qualquer outro conteúdo que complemente o principal.</p>
-    </aside>
-  </div>
+        <div id="home_category">
+          <div id="banner">
+            <a href="classes.html" class="classes">Classes</a>
+          </div>
+          <div id="banner">
+            <a href="subclasses.html" class="subclasses">Subclasses</a>
+          </div>
+          <div id="banner">
+            <a href="racas.html" class="racas">Raças</a>
+          </div>
+          <div id="banner">
+            <a href="bestiario.html" class="bestiario">Bestiário</a>
+          </div>
+          <div id="banner">
+            <a href="magias.html" class="magias">Magias</a>
+          </div>
+          <div id="banner">
+            <a href="itens.html" class="itens">itens</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <!-- Rodapé -->
   <footer>
-    <p>&copy; 2024 Baú do Doppler. Todos os direitos reservados.</p>
+    <main>
+    </main>
+    <div id="footer_content">
+      <div id="footer_contacts">
+        <a href="index.html">
+          <img src="img/logo_footer.png" alt="footer_logo">
+        </a>
+          <p>
+            Sua fonte de homebrew criatura! Ou pelo menos
+            essa é a ideia... Sempre consulte teu Mestre
+            antes de usar qualquer coisa daqui.
+          </p>
+          <div id="footer_social_media">
+            <a href="https://www.instagram.com/baudodoppler/" class="footer_link" id="instagram">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="https://discord.com/invite/bYrNcwkCK6" class="footer_link" id="discord">
+              <i class="fa-brands fa-discord"></i>
+            </a>
+            <a href="https://x.com/BauDoDoppler" class="footer_link" id="x">
+              <i class="fa-brands fa-x-twitter"></i>
+            </a>
+            <a href="https://www.youtube.com/@BaudoDoppler" class="footer_link" id="youtube">
+              <i class="fa-brands fa-youtube"></i>
+            </a>
+            <a href="https://www.tiktok.com/@baudodoppler?_t=8n79QXBR4HV&_r=1" class="footer_link" id="tiktok">
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+          </div>
+      </div>
+
+      <ul class="footer-list">
+        <li>
+          <h3>Conteúdo</h3>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Classes</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Subclasses</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Raças</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Bestiário</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Magias</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Itens</a>
+        </li>
+      </ul>
+
+      <ul class="footer-list">
+        <li>
+          <h3>Outros</h3>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Veículos</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Dádivas</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Armaduras</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Artefatos</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Bugigangas</a>
+        </li>
+        <li>
+          <a href="#" class="footer-link">Talentos</a>
+        </li>
+      </ul>
+
+      <div id="footer_email">
+        <h3>Contato</h3>
+        <p>
+          Gustavo A. Alves Rocha<br>
+          gevux@yahoo.com<br>
+          Goiânia - GO, Brasil
+        </p>
+        <a href="https://creativecommons.org/licenses/by-nc/2.0/br/deed.pt-br">
+          <img src="img/by-nc.svg" alt="cc-by-nc">
+        </a>
+      </div>
+    </div>
+
+    <div id="footer_copy">
+      &copy; 2024 Baú do Doppler. Todos os direitos reservados.
+    </div>
   </footer>
+  <!-- Final Rodapé -->
 
 </body>
 </html>
