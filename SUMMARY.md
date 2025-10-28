@@ -5,3 +5,4 @@
 ## About
 
 * [Overview](about/overview.md)
+* [Core Design](about/core-design.md)
