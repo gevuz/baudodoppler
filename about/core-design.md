@@ -22,6 +22,8 @@ Each role is designed to behave **according to its function** — no blurring of
 
 As an unfortunate former _League of Legends_ player, I’ve witnessed countless cases where the opposite happens, tanks out-damaging carries, supports one-shotting enemies, or DPS characters being nearly indestructible.
 
+#### Tank
+
 **Tanks** will be exactly what their name suggests, shields of flesh and steel. Their purpose is to be **resilient, large, and equipped with crowd control abilities**, never becoming **predators of their own predators (the DPS)**. Their items **do not scale for damage**; instead, they grant resistances, health, regeneration effects, and shields, everything that keeps them **alive**, not terrifying.
 
 Tanks are the **frontline of the team**: they protect, enable their carries to thrive in lane, and hold the line when the game turns rough. That’s their duty — and that’s enough.
