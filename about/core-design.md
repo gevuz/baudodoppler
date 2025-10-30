@@ -250,7 +250,7 @@ Remember: **Tanks don’t hunt DPS, and DPS obliterate Tanks — or anyone who d
 * `AS`: Attacks per second (after item & kit multipliers)
 * `C`: Critical strike chance (0–1)
 * `M`: Critical damage multiplier (e.g., `1.75` = +75%)
-* `Ppen`: Percent penetration vs. armor/resist (0–1), applied first
+* `Ppen`: Percent penetration vs. armor/ether (0–1), applied first
 * `Fpen`: Flat penetration (non-negative), applied second
 * `AR`, `MR`: Target’s Armor and Ether
 * `K_AR`, `K_MR`: Balance constants for mitigation curves (same family values as Tanks section)
