@@ -4,8 +4,10 @@ description: General list of characters already conceived.
 
 # Heroes Index
 
-{% columns %}
-{% column %}
+Click on the names to access the individual hero page, where you will find all the technical details and the complete history of the character.
+
+{% columns fullWidth="false" %}
+{% column width="33.33333333333333%" %}
 #### TANK
 
 Ak'Nyssara\
@@ -25,7 +27,7 @@ Vluarr\
 Xakkur
 {% endcolumn %}
 
-{% column %}
+{% column width="33.33333333333333%" %}
 #### DPS
 
 Ao Nuushi\
@@ -65,3 +67,4 @@ Rumerass\
 Wurfyne
 {% endcolumn %}
 {% endcolumns %}
+
