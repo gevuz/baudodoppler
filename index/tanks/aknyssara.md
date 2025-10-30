@@ -1,4 +1,5 @@
 ---
+description: The Purple Shield of Wrath.
 cover: ../../.gitbook/assets/GITBOOK HERO COVER 1.png
 coverY: 0
 layout:
@@ -22,3 +23,14 @@ layout:
 
 # Ak'Nyssara
 
+{% columns fullWidth="false" %}
+{% column %}
+### Base Stats, Level 1-20
+
+<table data-header-hidden data-full-width="false"><thead><tr><th align="center"></th><th align="center"></th></tr></thead><tbody><tr><td align="center"><strong>HP</strong><br>770 - 3100</td><td align="center"><strong>MP</strong><br>350 - 1300</td></tr><tr><td align="center"><strong>HP Regen</strong><br><strong>(per 5s)</strong><br>5 - 25</td><td align="center"><strong>Mana Regen</strong><br><strong>(per 5s)</strong><br>3.7 - 15.55</td></tr><tr><td align="center"><strong>Armor</strong><br>45 - 125</td><td align="center"><strong>Attack Dmg</strong><br>33 - 100</td></tr><tr><td align="center"><strong>Ether</strong><br>15 - 105</td><td align="center"><strong>Crit. Dmg</strong><br>1,77x</td></tr><tr><td align="center"><strong>Move. Speed</strong><br>340</td><td align="center"><strong>Attack Range</strong><br>120</td></tr></tbody></table>
+{% endcolumn %}
+
+{% column %}
+<figure><img src="../../.gitbook/assets/Ak&#x27;Nyssara.png" alt=""><figcaption></figcaption></figure>
+{% endcolumn %}
+{% endcolumns %}
