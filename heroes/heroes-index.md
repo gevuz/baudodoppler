@@ -6,6 +6,8 @@ description: General list of characters already conceived.
 
 Click on the names to access the individual hero page, where you will find all the technical details and the complete history of the character.
 
+***
+
 {% columns fullWidth="false" %}
 {% column width="33.33333333333333%" %}
 #### TANK
