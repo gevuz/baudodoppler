@@ -7,6 +7,8 @@
 * [Overview](about/overview.md)
 * [Core Design](about/core-design.md)
 
-## Heroes
+## Index
 
-* [Heroes Index](heroes/heroes-index.md)
+* [Heroes Index](index/heroes-index.md)
+* [Tanks](index/tanks/README.md)
+  * [Ak'Nyssara](index/tanks/aknyssara.md)
