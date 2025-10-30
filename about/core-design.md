@@ -644,3 +644,17 @@ U_sup = w_H * (H_total / HP_ref)
 * Gate **amps** via uptime and stacking DR to prevent multiplicative blowouts with DPS crit/pen builds.
 * Validate balance with **team simulations**: vary `A_DR`, `A_dmg`, and anti-heal levels to hit your target **TTK curves** across skill bands.
 {% endhint %}
+
+{% hint style="danger" %}
+**Disclaimer & Development Note**
+
+All formulas, constants, and models presented here are **theoretical frameworks** designed to establish initial balance guidelines. They represent an **early mathematical vision** of _Ego Quantum’s_ combat system and are subject to **testing, iteration, and validation** through playtesting and simulation.
+
+These metrics **do not represent final in-game values**. As development progresses and prototypes are implemented, adjustments may be required to ensure:
+
+* Mechanical feel and pacing align with intended gameplay;
+* Performance and fairness across all roles remain consistent;
+* Accessibility for both developers and players is maintained.
+
+> Since the current project phase is primarily conceptual and my programming knowledge is still limited, these equations and variables are open to future revision once deeper system testing and scripting become possible.
+{% endhint %}
