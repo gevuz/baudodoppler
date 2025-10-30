@@ -208,9 +208,10 @@ The mechanic of prohibiting the purchase of items by role are still being studie
 These hit readable EHP gains without letting mitigation or conditional damage run away.
 
 {% hint style="success" %}
-Designer Notes
+**Designer Notes**
 
 * Tune `K_AR`, `K_MR` to hit desired TTK across MMR bands.
 * Reserve all offensive growth for **DPS** and **burst mages**; tanks trade damage for control and access.
 * When a tank build tops damage charts in logs, check: `α_DPS` violations, missing caps on conditional damage, or unintended scaling chains (defense → offense multipliers).
 {% endhint %}
+
