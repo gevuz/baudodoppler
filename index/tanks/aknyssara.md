@@ -41,7 +41,7 @@ layout:
 {% endcolumn %}
 
 {% column %}
-<figure><img src="../../.gitbook/assets/GITBOOK HERO RATING 1.png" alt=""><figcaption></figcaption></figure>
+<figure><picture><source srcset="../../.gitbook/assets/GITBOOK HERO RATING WHITE 1.png" media="(prefers-color-scheme: dark)"><img src="../../.gitbook/assets/GITBOOK HERO RATING BLACK 1.png" alt=""></picture><figcaption></figcaption></figure>
 {% endcolumn %}
 {% endcolumns %}
 
