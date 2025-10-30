@@ -215,3 +215,196 @@ These hit readable EHP gains without letting mitigation or conditional damage ru
 * When a tank build tops damage charts in logs, check: `α_DPS` violations, missing caps on conditional damage, or unintended scaling chains (defense → offense multipliers).
 {% endhint %}
 
+***
+
+### DPS
+
+These are the ones responsible for having the **highest bars on the damage charts** across both teams — and that’s obvious. Their role is _Damage Per Second_, self-explanatory. They ensure that enemies are eliminated with **precision, speed, and consistency**.
+
+They may possess **high mobility** and the ability to be **self-sufficient** if caught alone (depending on the player’s skill). However, all of this comes with a trade-off: **they lack high resistances or large health pools**.
+
+This is part of a **logical and necessary balance** — in a team-based game, no single hero should possess every attribute. Protagonism shouldn’t belong to one person, but to the **team as a whole**.
+
+DPS heroes benefit greatly from **strong early phases**, where they can secure advantages over opponents and create the famous _snowball effect_.
+
+They are **powerful, but not untouchable**, and their purpose is simple and absolute: **to deal damage**.
+
+Remember: **Tanks don’t hunt DPS, and DPS obliterate Tanks — or anyone who dares to stand in their way.**
+
+### DPS Design & Math
+
+**DPS** heroes convert resources (positioning, uptime, items) into **reliable damage throughput**. They win fights by sequencing bursts and sustained fire while staying fragile.
+
+#### Core Goals
+
+1. **Highest damage ceiling** under strict survivability constraints.
+2. **Skill expression via uptime** (positioning, cooldown weaving, target selection).
+3. **Legible scaling:** crit and penetration feel strong but are bounded; true damage exists but is tightly budgeted.
+
+***
+
+#### Base Variables
+
+* `AD`: Physical power (basic attacks/some abilities)
+* `AP`: Ether power (spell damage/some abilities)
+* `AS`: Attacks per second (after item & kit multipliers)
+* `C`: Critical strike chance (0–1)
+* `M`: Critical damage multiplier (e.g., `1.75` = +75%)
+* `Ppen`: Percent penetration vs. armor/resist (0–1), applied first
+* `Fpen`: Flat penetration (non-negative), applied second
+* `AR`, `MR`: Target’s Armor and Ether
+* `K_AR`, `K_MR`: Balance constants for mitigation curves (same family values as Tanks section)
+* `τ`: True damage fraction (0–1) of a given hit (ignores defenses)
+* `σ`: Damage block/guard fraction on target (post-mitigation block, if any; default 0)
+* **Timing & rotation**
+  * `Δt`: Combat window (seconds) for evaluation (e.g., 10 s)
+  * `CD_i`: Cooldown of ability `i`
+  * `U`: Uptime fraction on target within `Δt` (0–1)
+* **Fragility guardrails**
+  * `EHP_DPS`: Effective health of DPS (should remain the lowest among roles)
+
+***
+
+#### Mitigation & Penetration (for non-true damage)
+
+Use the same diminishing-returns mitigation as Tanks to keep systems unified:
+
+* Raw DR curves:
+  * `DR_phys = AR / (AR + K_AR)`
+  * `DR_mag = MR / (MR + K_MR)`
+* Apply penetration in order (per hit or per ability resolution):
+  * `AR' = max(0, (1 − Ppen) × AR − Fpen)`
+  * `MR' = max(0, (1 − Ppen) × MR − Fpen)`
+  * Then recompute:
+    * `DR_phys' = AR' / (AR' + K_AR)`
+    * `DR_mag' = MR' / (MR' + K_MR)`
+* Post-mitigation block/guard (if target has any):
+  * `D_final = (1 − σ) × D_after_DR`
+
+> Design note: cap `Ppen` per source and globally (e.g., `Ppen_total ≤ 0.45`) to prevent nullifying defenses.
+
+***
+
+#### Critical System
+
+**Expected Damage per Basic Attack**
+
+Let `H_base` be the pre-mitigation base hit (from `AD` and on-hit effects).
+
+<table data-header-hidden><thead><tr><th width="218"></th><th></th></tr></thead><tbody><tr><td><strong>Expected crit multiplier</strong></td><td><code>E[crit_mult] = (1 − C) × 1 + C × M = 1 + C × (M − 1)</code></td></tr><tr><td><strong>Expected pre-mitigation hit</strong></td><td><code>E[H_raw] = H_base × E[crit_mult]</code></td></tr><tr><td><strong>Split true vs non-true portions (per hit)</strong></td><td><code>H_true = τ × E[H_raw]</code><br><code>H_nontrue = (1 − τ) × E[H_raw]</code></td></tr><tr><td><strong>Apply mitigation to</strong> <code>H_nontrue</code> <strong>using</strong> <code>DR_phys'</code> <strong>or</strong> <code>DR_mag'</code> <strong>(damage type)</strong></td><td><code>H_mitig = (1 − DR_type') × H_nontrue</code></td></tr><tr><td><strong>Apply any post-mitigation block/guard</strong></td><td><code>H_final = (1 − σ) × (H_true + H_mitig)</code></td></tr></tbody></table>
+
+**Expected Sustained DPS (Basics Only)**
+
+`DPS_basics = AS × H_final × U`
+
+> `U` captures repositioning, kiting, reloads/charge time, animation locks.
+
+***
+
+#### Ability Damage (Burst + DoT)
+
+For each ability `i` with base damage `A_i` (pre-mitigation) and damage type:
+
+1. **Crit behavior:** if ability can crit, multiply `A_i` by `E[crit_mult]`; otherwise leave as is.
+2. **True fraction:** split by `τ_i` if the ability contains partial true damage.
+3. **Mitigation:** apply `DR_phys'` or `DR_mag'` to the non-true portion, then block/guard `σ`.
+4. **Casts per window:** `casts_i(Δt) = floor(Δt / CD_i)` (or use fractional expected casts for long windows)
+5. **Total contribution in window:** `D_i(Δt) = casts_i(Δt) × (1 − σ) × [ τ_i × A_i' + (1 − τ_i) × (1 − DR_type') × A_i' ]` where `A_i'` already includes crit if applicable.
+
+**Rotation DPS (Abilities Only):** `DPS_abilities = ( Σ_i D_i(Δt) ) / Δt`
+
+***
+
+#### Total DPS
+
+`DPS_total = DPS_basics + DPS_abilities`
+
+Optional granularity (if you model reloads/heat):
+
+* Replace `U` with a **piecewise uptime model** or a **Markov uptime estimator** for weapons with magazines/overheats.
+
+***
+
+#### True (Pure) Damage Policy
+
+* True damage is **a budgeted resource**: set a small `τ` on specific windows or tie `τ_i` to skill-checks (headshots, weak points, precise timings).
+* Avoid sustained `%MaxHP true damage`. If you use `MaxHP` scaling, gate it behind:
+  * **Execute thresholds** (e.g., only when target HP ≤ `x%`), and
+  * **Internal cooldowns** (e.g., `≥ 8 s`), and
+  * **Team-shared cooldowns** if multiple heroes can bring executes.
+
+> Example cap: across all sources, **sustained true damage share** over a 10s window should be `≤ 20–25%` of `DPS_total` on average.
+
+***
+
+#### Crit Stacking Guardrails
+
+* **Caps:**
+  * `C ≤ C_cap` (e.g., `0.60`)
+  * `M ≤ M_cap` (e.g., `2.00`, i.e., +100%)
+* **Diminishing returns** for stacking multiple crit sources (simple continuous DR):\
+  `C_eff = C_raw / (1 + λ_C × C_raw)` with `λ_C ≈ 0.75`\
+  `M_eff = 1 + (M_raw − 1) / (1 + λ_M × (M_raw − 1))` with `λ_M ≈ 0.6`
+
+Use `C_eff` and `M_eff` in `E[crit_mult]`.
+
+***
+
+#### Penetration Guardrails
+
+* **Order:** `%` first, then flat.
+* **Upper bound:** `Ppen_total ≤ 0.45`; `Fpen_total` tuned so that high-pen builds **improve TTK** vs. armored targets but aren’t universally best versus low-defense targets.
+* For hybrid damage kits, compute mitigation per component (phys/mag) with their own `Ppen/Fpen`.
+
+***
+
+#### Fragility Requirements (to prove role identity)
+
+* Keep **DPS EHP** the lowest among roles at equivalent item budgets:\
+  `EHP_DPS ≤ 0.65 × EHP_Tank` at midgame reference (e.g., LVL 8, 2 items).
+* No defensive item should convert defense directly into offense for DPS (no “gain damage from %HP/Armor/Ether”).
+
+***
+
+#### Sanity Checks (Starting Points)
+
+* **Single-target TTK vs. midgame tank (2 core items):**
+  * Skilled DPS with pen build and high `U`: `5.0–10.0 s`
+  * Low uptime or wrong damage type vs. target build: `6.5–15.7 s`
+* **Burst window (Δt = 2 s) vs. squishy:** DPS can secure lethal if **two** of: crit spike, ability connect, weak-point hit.
+* **Sustained share:** Over `Δt = 10 s`, `DPS_total` should exceed any non-DPS role by **≥ 35%** in neutral scenarios.
+
+***
+
+#### Example Numbers (illustrative)
+
+Setup: `AD = 110`, `AS = 1.6`, `C_raw = 0.50`, `M_raw = 1.90`, `Ppen = 0.30`, `Fpen = 18`, `τ = 0.10`
+
+Target tank: `AR = 180`, `K_AR = 100`, `σ = 0.05`, `U = 0.75`
+
+1. Crit DR:\
+   `C_eff = 0.50 / (1 + 0.75 × 0.50) = 0.50 / 1.375 ≈ 0.3636`\
+   `M_eff = 1 + (0.90) / (1 + 0.6 × 0.90) = 1 + 0.90 / 1.54 ≈ 1.584`\
+   `E[crit_mult] = 1 + 0.3636 × (1.584 − 1) ≈ 1 + 0.3636 × 0.584 ≈ 1.2125`
+2. **Base hit (simplified):**\
+   Assume `H_base = AD = 110` → `E[H_raw] = 110 × 1.2125 ≈ 133.4`
+3. **Pen & DR:**\
+   `AR' = max(0, (1 − 0.30) × 180 − 18) = max(0, 126 − 18) = 108`\
+   `DR_phys' = 108 / (108 + 100) ≈ 0.519`
+4. **True vs non-true split; block:**\
+   `H_true = 0.10 × 133.4 = 13.34`\
+   `H_nontrue = 0.90 × 133.4 = 120.06`\
+   `H_mitig = (1 − 0.519) × 120.06 ≈ 57.6`\
+   `H_final = (1 − 0.05) × (13.34 + 57.6) ≈ 0.95 × 70.94 ≈ 67.4`
+5. **Sustained basics:**\
+   `DPS_basics = AS × H_final × U = 1.6 × 67.4 × 0.75 ≈ 80.9`
+
+(Then add abilities via the rotation method to get `DPS_total`.)
+
+{% hint style="success" %}
+**Designer Notes**
+
+* Tune `K_AR`, `K_MR`, `C_cap`, `M_cap`, `Ppen/Fpen` to hit TTK targets across skill bands.
+* Keep **true damage** impactful but **temporal** (windows, executes, weak-points), not passive always-on throughput.
+* If DPS are routinely losing to tanks in damage logs, check: penetration caps too low, `U` suppression too harsh (maps/visual clutter), or overtuned guard/block (`σ`) on targets.
+{% endhint %}
