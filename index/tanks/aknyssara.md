@@ -37,7 +37,7 @@ layout:
 
 {% columns fullWidth="false" %}
 {% column %}
-<table data-header-hidden data-full-width="false"><thead><tr><th align="center"></th><th align="center"></th></tr></thead><tbody><tr><td align="center"><strong>Playstyle</strong><br>Top, Support</td><td align="center"><strong>MP</strong><br>350 - 1300</td></tr><tr><td align="center"><strong>HP Regen</strong><br>5 - 25</td><td align="center"><strong>Mana Regen</strong><br>3.7 - 15.55</td></tr><tr><td align="center"><strong>Armor</strong><br>45 - 125</td><td align="center"><strong>Attack Dmg</strong><br>33 - 100</td></tr></tbody></table>
+<table data-header-hidden data-full-width="false"><thead><tr><th align="center"></th><th align="center"></th></tr></thead><tbody><tr><td align="center"><strong>Birth</strong><br>2025-10-02</td><td align="center"><strong>Playstyle</strong><br>Top, Support</td></tr><tr><td align="center"><strong>Ether Type</strong><br>Mana</td><td align="center"><strong>Main Damage</strong><br>Physical</td></tr><tr><td align="center"><strong>Store Price</strong><br>Free</td><td align="center"><strong>Symbol</strong><br><mark style="color:$primary;"><strong>✧</strong></mark></td></tr></tbody></table>
 {% endcolumn %}
 
 {% column %}
