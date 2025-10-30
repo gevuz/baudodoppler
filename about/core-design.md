@@ -55,7 +55,7 @@ Tanks are the **frontline of the team**: they protect, enable their carries to t
 * `ε` → Anti-burst reserve (temporaty HP or shield as a fraction of `HP`)
 * Constants tuned by balance:
   * `K_AR`, `K_MR` → Armor/ether base constants
-  * `β_HP`, `β_AR`, β\_MR → Per-level growth factors
+  * `β_HP`, `β_AR`, `β_MR` → Per-level growth factors
   * `α_DPS` → Tank DPS cap as fraction of a true DPS hero (e.g., `α_DPS = 0.35`)
   * `γ_DRcap` → Hard cap on total mitigation (e.g., 0.70–0.75)
 

@@ -6,3 +6,7 @@
 
 * [Overview](about/overview.md)
 * [Core Design](about/core-design.md)
+
+## Heroes
+
+* [Heroes Index](heroes/heroes-index.md)
