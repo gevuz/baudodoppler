@@ -1,7 +1,7 @@
 ---
 description: This not a real game — at least not yet.
 icon: hand-wave
-cover: .gitbook/assets/GITBOOK COVER 1 (1).png
+cover: .gitbook/assets/GITBOOK COVER 1 (2).png
 coverY: 0
 layout:
   width: default
