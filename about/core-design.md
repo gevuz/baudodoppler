@@ -408,3 +408,239 @@ Target tank: `AR = 180`, `K_AR = 100`, `σ = 0.05`, `U = 0.75`
 * Keep **true damage** impactful but **temporal** (windows, executes, weak-points), not passive always-on throughput.
 * If DPS are routinely losing to tanks in damage logs, check: penetration caps too low, `U` suppression too harsh (maps/visual clutter), or overtuned guard/block (`σ`) on targets.
 {% endhint %}
+
+***
+
+### Support
+
+These heroes are responsible for **keeping their team standing** during difficult fights — through healing, buffs, or even by becoming an additional shield in front of their DPS. Supports can take many forms: **mages**, **light tanks**, or even **damage-capable hybrids** comparable to the team’s carries. However, what truly defines them is their **Utility**.
+
+Their items are the **most versatile in the game**, allowing them to adapt to countless situations and respond to whatever the battle demands. A good Support anticipates danger, strengthens allies, and ensures the team’s survival, often being the difference between defeat and victory.
+
+### Support Design & Math
+
+**Supports** keep allies alive and effective through **healing, shielding, buffs, cleanses, and control**. Their power budget is **utility-first**, with tightly limited personal damage.
+
+#### Core Goals
+
+1. **Utility over damage:** throughput = healing + shielding + mitigation + ally amplification.
+2. **Readable scaling:** diminishing returns on stackable sustain/DR; caps on damage amplification.
+3. **Counterplay:** anti-heal, shield breakpoints, cooldown windows, positional play.
+
+***
+
+#### Base Variables
+
+* Incoming damage to an ally per hit: `D_in`
+* Ally defenses: `AR_t`, `MR_t` (target), with constants `K_AR`, `K_MR`
+* Post-pen mitigation on target (same model as other roles):\
+  `DR_phys = AR_t / (AR_t + K_AR)`, `DR_mag = MR_t / (MR_t + K_MR)`
+* Post-mitigation, pre-shield damage on target:\
+  `D_post = (1 − DR_type) × D_in`
+* **Healing & Shields**
+  * `H_i`: base heal of ability/item `i` (pre-modifiers)
+  * `S_i`: base shield of ability/item `i` (pre-modifiers)
+  * `η`: anti-heal multiplier on target (0–1), applied to healing only
+  * `ξ`: shield break efficiency of enemies vs. shields (0–1) (optional, default 0)
+  * `κ_S`: shield decay per second (0–1/s) if decays over time
+* Buffs / Amplifiers
+  * `A_dmg`: ally outgoing damage amp (multiplier, e.g., 0.15 = +15%)
+  * `A_DR`: ally incoming damage reduction (pre- or post-mitigation flag)
+  * `A_haste`: attacks-per-second or cast-speed modifier
+* **Economy & Timings**
+  * Evaluation window: `Δt` (e.g., 10 s)
+  * Casts in window: `casts_i(Δt) = floor(Δt / CD_i)` (or fractional expectation)
+
+***
+
+#### Ordering: Damage, Shields, Healing
+
+We standardize resolution for clarity and balance:
+
+1. Apply target mitigation → `D_post`
+2. Apply **shields** → `D_to_HP = max(0, D_post − S_active × (1 − ξ))`
+3. Apply **healing** to HP (after damage) with anti-heal → `H_eff = η × H_gross`
+
+> Design note: shields protect **post-mitigation** damage (cleaner tuning vs. EHP explosions). Anti-heal (`η`) never affects shields.
+
+***
+
+#### Shields
+
+**Per-Cast Effective Shield**
+
+* If a shield decays or is partially shredded:\
+  `S_eff = (1 − ξ) × S_i × (1 − e^{−κ_S × dur_i})`\
+  (Use `κ_S = 0` for non-decay; `dur_i` is max duration.)
+
+**Shield EHP Contribution (vs. damage type)**
+
+* Since shields face post-mitigation damage, their EHP is **just** `S_eff` in that context.
+* For _planning_, you can express _virtual_ EHP vs. raw damage as:\
+  `S_vEHP = S_eff / (1 − DR_type)`
+
+**Shield Throughtput in Window**
+
+`S_total(Δt) = Σ_i [ casts_i(Δt) × S_eff_i ]`
+
+***
+
+#### Healing
+
+**Per-Cast Effective Heal**
+
+`H_eff_i = η × H_i × m_targets × m_AoE`
+
+* `m_targets`: number of valid targets actually hit (≤ max targets)
+* `m_AoE`: AoE falloff scalar (0–1), if any
+
+**Healing Throughtput in Window**
+
+`H_total(Δt) = Σ_i [ casts_i(Δt) × H_eff_i ]`
+
+**Healing Per Second (HPS)**
+
+`HPS = H_total(Δt) / Δt`
+
+***
+
+#### Resource Constraint (Sustainable Throughtput)
+
+Across `Δt`, require:\
+`Σ_i [ casts_i(Δt) × Cost_i ] ≤ R_0 + RPS × Δt`
+
+If resource-limited, cap casts to:\
+`casts_i^*(Δt) = min( casts_i(Δt), floor( (R_0 + RPS × Δt − Σ_{j<i} casts_j^* × Cost_j) / Cost_i ) )`
+
+Compute `H_total^*`, `S_total^*` with constrained casts for **sustainable** numbers.
+
+***
+
+#### Damage Reduction & Amplification
+
+**Incoming DR Aura (ally side)**
+
+Model as **post-mitigation, pre-shield** or **post-shield** depending on design. Recommended: **post-mitigation, pre-shield** so DR meaningfully preserves shields.
+
+* If DR aura is `A_DR` (0–0.30 typical), then effective post step becomes:\
+  `D_post' = (1 − A_DR) × D_post`
+
+**Diminishing returns for stacking DR auras:**\
+`A_DR_stack = 1 − Π_k (1 − A_DR_k)` and **cap** `A_DR_stack ≤ DR_cap_sup` (e.g., 0.35)
+
+**Outgoing Damage Amp (ally empowerment)**
+
+Apply to ally’s **non-true** portion pre-target mitigation to avoid double-counting with pen:\
+`D_out' = (1 + A_dmg) × D_out_nontrue + D_out_true`
+
+* **DR on stacking amps:**\
+  `A_dmg_stack = 1 − Π_k (1 − A_dmg_k)` with **cap** `≤ 0.25` in teamfights.
+
+**Haste/Uptime**
+
+For buffs that increase attacks/casts:\
+`AS' = (1 + A_haste) × AS` and recompute ally DPS with their own crit/pen pipeline.
+
+***
+
+#### Cleanses & Immunities
+
+* Cleanse removes `n` debuff categories with an internal cooldown `ICD_cleanse`.
+* **Stack DR** on repeated self/ally cleanses affecting the **same target** within 10 s:\
+  `duration_removed_eff = duration_removed_base / (1 + λ_cleanse × stacks_on_target)` with `λ_cleanse ≈ 0.5`
+* Avoid full immunities; prefer short, narrow windows with visible telegraph.
+
+***
+
+#### Utility Budget (per 10s window)
+
+Define a **Support Utility Score** `U_sup` to keep hybrids in line:
+
+```
+U_sup = w_H * (H_total / HP_ref)
+      + w_S * (S_total / HP_ref)
+      + w_DR * A_DR_stack
+      + w_amp * A_dmg_stack
+      + w_cleanse * uses_cleanse
+      + w_move * uptime_MS
+      + w_CC * CC_budget_10s
+```
+
+* Choose weights so a “full utility” Support hits `U_sup ≈ 1.0` at parity.
+* For “damage-capable hybrid” Supports, require:\
+  `DPS_support ≤ α_SUP × DPS_carry_baseline` with `α_SUP ≈ 0.55–0.60`, **and** a minimum `U_sup ≥ 0.7`.
+
+***
+
+#### Anti-Heal & Counter-Sustain
+
+* **Anti-heal (`η`)** affects only **healing**; recommended tiers: 0.6 (light), 0.4 (heavy).
+* Shields ignore `η` but respect shield-break (`ξ`) and decay (`κ_S`).
+* To avoid stalemates, enforce **teamwide sustain caps** over windows:\
+  `H_total_team(10s) + S_total_team(10s) ≤ θ_sustain × Damage_incoming_expected(10s)` with `θ_sustain ≈ 0.65–0.75` in even fights.
+
+***
+
+#### Fragility & Positioning
+
+* Personal EHP of Supports sits **between** DPS and Tanks:\
+  `EHP_DPS < EHP_Support < EHP_Tank` at reference state.
+* Self-peel exists but is **limited**: short displacements, brief DR, or micro-shields.
+
+***
+
+#### Sanity Checks (Starting Points)
+
+* **Per 10 s window (even fight):**
+  * Single-target sustain focus: `HPS + SPS` sufficient to extend TTK on a focused ally by **+30–45%** vs. no-support baseline.
+  * Teamwide AoE sustain builds: total `H_total + S_total` capped by `θ_sustain` rule.
+* Buff ceilings:
+  * `A_dmg_stack ≤ 25%` teamfight;
+  * `A_DR_stack ≤ 35%` teamfight;
+  * `A_haste` commonly `10–25%` with uptime gating.
+* **Hybrid damage guardrail:** `DPS_support ≤ 0.6 × DPS_carry_baseline` at equal budget.
+
+***
+
+#### Example Numbers (illustrative)
+
+**Setup (Δt = 10 s):** Single-target support with two buttons and one aura. Target has `AR_t = 120`, `K_AR = 100` → `DR_phys ≈ 0.545`. Enemy deals `D_in = 500` physical per hit at 2 hits/s.
+
+**Effects**
+
+* **Shield A:** `S_A = 180`, `dur = 4 s`, `κ_S = 0`, `ξ = 0` → `S_eff_A = 180`\
+  `CD_A = 6 s` → `casts_A = 1` (using at t=0 → uptime 4 s)
+* **Heal B:** `H_B = 260`, single-target, `η = 0.6` (anti-heal present) → `H_eff_B = 156`\
+  `CD_B = 5 s` → `casts_B = 2` → `H_total = 312`
+* **DR Aura:** `A_DR = 0.12`, uptime `U_DR = 0.6` in window → average `A_DR_avg = 0.072`\
+  Apply as post-mitigation, pre-shield.
+
+**Incoming System**
+
+* Per hit post-mitigation: `D_post = (1 − 0.545) × 500 = 228`
+* With average DR aura: `D_post' = (1 − 0.072) × 228 ≈ 212.7`
+
+**Shield Absortion**
+
+* Over 4 s shield uptime at 2 hits/s → \~8 hits buffered by `S_A = 180`:\
+  Per hit during shield: damage to HP = `max(0, 212.7 − 180) = 32.7`
+* After shield expires (remaining 6 s): per hit = `212.7`
+
+**Healing**
+
+* Two heals of `156` applied reactively within the 10 s.
+
+**Net effect (intuition):**
+
+* During shield window, each hit is reduced by \~`180`, vastly lowering HP loss and giving time for the two heals to land.
+* Aggregate sustain over 10 s: `S_total = 180`, `H_total = 312` → `492` post-mitigation damage offset, plus `~7.2%` DR averaged.
+* Compare to no-support baseline to confirm TTK extends by roughly **\~35–40%** in this setup (within sanity target).
+
+{% hint style="success" %}
+**Designer Notes**
+
+* Keep **shields post-mitigation** to avoid explosive vEHP; use `ξ`/`κ_S` to fine-tune counterplay.
+* Anti-heal must matter (`η ≤ 0.6` common), but not hard-lock supports out of relevance—shields bypass `η` by design.
+* Gate **amps** via uptime and stacking DR to prevent multiplicative blowouts with DPS crit/pen builds.
+* Validate balance with **team simulations**: vary `A_DR`, `A_dmg`, and anti-heal levels to hit your target **TTK curves** across skill bands.
+{% endhint %}
